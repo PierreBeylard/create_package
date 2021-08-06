@@ -1,0 +1,133 @@
+#!/usr/bin/env python
+# -- coding: utf-8 --
+import os
+import sys
+import subprocess
+
+
+
+def pkg_skeleton(project_name:str, package_name:str, script_name:str):
+    subprocess.run(["mkdir",f"{project_name}"])
+    subprocess.run(["mkdir",f"{project_name}/api"])
+    subprocess.run(["mkdir",f"{project_name}/notebooks"])
+    subprocess.run(["mkdir",f"{project_name}/{package_name}"])
+    subprocess.run(["mkdir",f"{project_name}/scripts"])
+    subprocess.run(["mkdir",f"{project_name}/tests"])
+    subprocess.run(["mkdir",f"{project_name}/data"])
+    subprocess.run(["touch",f"{project_name}/.gitignore"])
+    subprocess.run(["touch", f"{project_name}/Makefile"])
+    subprocess.run(["touch", f"{project_name}/README.md"])
+    subprocess.run(["touch", f"{project_name}/requirements.txt"])
+    subprocess.run(["touch", f"{project_name}/setup.py"])
+    subprocess.run(["touch", f"{project_name}/{package_name}/__init__.py"])
+    subprocess.run(["touch", f"{project_name}/{package_name}/data.py"])
+    subprocess.run(["touch", f"{project_name}/{package_name}/preprocessing.py"])
+    subprocess.run(["touch", f"{project_name}/{package_name}/pipeline.py"])
+    subprocess.run(["touch", f"{project_name}/{package_name}/ml.py"])
+    subprocess.run(["touch", f"{project_name}/notebooks/.keep"])
+    subprocess.run(["touch", f"{project_name}/scripts/{script_name}"])
+    subprocess.run(["touch", f"{project_name}/api/main.py"])
+    subprocess.run(["touch", f"{project_name}/tests/.keep"])
+    subprocess.run(["touch", f"{project_name}/data/.keep"])
+
+def writter_setup(project_name: str, script_name:str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}"
+    text = f'''from setuptools import setup, find_packages
+with open('requirements.txt', 'r') as my_file:
+    requirements = [x for x in my_file.readlines()]
+setup(
+    name='{project_name}',
+    version='0.0.1',
+    packages=find_packages(),
+    scripts=['scripts/{script_name}'],
+    requirements=requirements
+    )'''
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+        
+def writter_api(project_name: str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}/api"
+    text = '''from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+'''
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+
+def writter_requirements(project_name: str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}"
+    text = '''numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+fastapi
+pytest'''
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+
+def writter_git_ignore(project_name: str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}"
+    text = '''/data
+.ipynb_checkpoints
+.pycache'''
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+
+def writter_makefile(project_name: str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}"
+    text = f'''# Colors for echos 
+ccend=$(shell tput sgr0)
+ccso=$(shell tput smso)
+create_pyenv_env : 
+\t@pyenv virtualenv 3.8.6 {project_name}
+\t@echo "$(ccso)--> Saisir dans la console : pyenv activate {project_name} && make install requirements $(ccend)"
+#\tsource "~/home/pierre/.pyenv/versions/3.8.6/envs/{project_name}bin/activate"
+
+install_requirements: requirements.txt
+\t@pip install --upgrade pip
+\t@pip install -r requirements.txt
+\t@pip freeze > requirements.txt
+clean:
+\trm -rf __pycache__'''
+
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+
+def writter_readme(project_name: str, file_name: str):
+    path = f"{os.getcwd()}/{project_name}"
+    text = ''''''
+    with open('{}/{}'.format(path, file_name), 'w') as my_file:
+        my_file.writelines(text)
+        
+def writter_script(project_name: str, script_name: str):
+    path =f"{os.getcwd()}/{project_name}/scripts"
+    text = '''    #!/usr/bin/env python
+# -- coding: utf-8 --
+    '''
+    with open('{}/{}'.format(path, script_name), 'w') as my_file:
+        my_file.writelines(text)
+
+
+
+def constructor():
+    project_name = sys.argv[1]
+    package_name = sys.argv[2]
+    script_name = sys.argv[3]
+    subprocess.run([f"echo {project_name} skeleton under constuction,"],shell = True)
+    pkg_skeleton(project_name, package_name, script_name)
+    writter_setup(project_name,script_name,'setup.py')
+    writter_api(project_name, 'main.py')
+    writter_requirements(project_name,'requirements.txt')
+    writter_git_ignore(project_name,'.gitignore')
+    writter_makefile(project_name,'Makefile')   
+    writter_readme(project_name,'README.md')
+    writter_script(project_name,script_name)
+    subprocess.run([f"echo {project_name} skeleton created,"],shell = True)
+    subprocess.run([f"echo $(tput setab 7) $(tput setaf 0)'--> Saisir dans la console : cd {project_name} && make create_pyenv_env'"],shell = True)
+
+constructor()
