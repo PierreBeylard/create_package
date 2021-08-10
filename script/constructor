@@ -32,16 +32,19 @@ def pkg_skeleton(project_name:str, package_name:str, script_name:str):
 
 def writter_setup(project_name: str, script_name:str, file_name: str):
     path = f"{os.getcwd()}/{project_name}"
-    text = f'''from setuptools import setup, find_packages
+    pack_data ='"": ["*.joblib"],'
+    text = '''from setuptools import setup, find_packages
 with open('requirements.txt', 'r') as my_file:
     requirements = [x for x in my_file.readlines()]
 setup(
-    name='{project_name}',
+    name='{}',
     version='0.0.1',
     packages=find_packages(),
-    scripts=['scripts/{script_name}'],
-    requirements=requirements
-    )'''
+    scripts=['scripts/{}'],
+    requirements=requirements,
+    package_data={},
+    include_package_data=True,
+    )'''.format(project_name, script_name,pack_data)
     with open('{}/{}'.format(path, file_name), 'w') as my_file:
         my_file.writelines(text)
         
@@ -66,7 +69,8 @@ matplotlib
 seaborn
 scikit-learn
 fastapi
-pytest'''
+pytest
+joblib'''
     with open('{}/{}'.format(path, file_name), 'w') as my_file:
         my_file.writelines(text)
 
@@ -74,7 +78,8 @@ def writter_git_ignore(project_name: str, file_name: str):
     path = f"{os.getcwd()}/{project_name}"
     text = '''/data
 .ipynb_checkpoints
-.pycache'''
+.vscode
+__pycache__'''
     with open('{}/{}'.format(path, file_name), 'w') as my_file:
         my_file.writelines(text)
 
@@ -85,7 +90,7 @@ ccend=$(shell tput sgr0)
 ccso=$(shell tput smso)
 create_pyenv_env : 
 \t@pyenv virtualenv 3.8.6 {project_name}
-\t@echo "$(ccso)--> Saisir dans la console : pyenv activate {project_name} && make install requirements $(ccend)"
+\t@echo "$(ccso)--> Saisir dans la console : pyenv activate {project_name} && make install_requirements $(ccend)"
 #\tsource "~/home/pierre/.pyenv/versions/3.8.6/envs/{project_name}bin/activate"
 
 install_requirements: requirements.txt
