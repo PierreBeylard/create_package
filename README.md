@@ -1,9 +1,9 @@
-# create_package
-Package to create project skeleton
+# Objective of the package 
+Create a project skeleton
 
-# install pakage : 
+# Install pakage : 
 pip install git+https://github.com/PierreBeylard/create_package
 
-#command to constructor project skeleton: 
+# Command - constructor project skeleton: 
 constructor project_name pakage_name script_name
 
